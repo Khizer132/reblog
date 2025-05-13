@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Frontend service (production)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use production Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_BACKEND_URL=http://api.yourdomain.com  # Change this to your domain
+    depends_on:
+      - backend
+    networks:
+      - blog-network
+
+  # Backend service (production)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "5000:5000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
+    depends_on:
+      - redis
+    networks:
+      - blog-network
+
+  # Redis service (production)
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis-data:/data
+    networks:
+      - blog-network
+    command: redis-server --appendonly yes  # Enable persistence
+    # No port exposure in production for security
+
+networks:
+  blog-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local 
