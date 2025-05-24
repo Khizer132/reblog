@@ -8,7 +8,7 @@ console.log('Starting server initialization...');
 const app = express();
 console.log('Express app created');
 
-const redis = new Redis();
+const redis = new Redis(process.env.REDIS_URL || 'redis://redis:6379');
 console.log('Redis client created');
 
 redis.on('connect', () => {
@@ -22,7 +22,7 @@ redis.on('error', (err) => {
 app.use(cors());
 app.use(express.json());
 
-// Sample data to initialize Redis (you would typically do this once)
+
 const sampleBlogs = [
   {
     id: '1',
@@ -68,7 +68,7 @@ const sampleBlogs = [
   }
 ];
 
-// Sample author data
+
 const sampleAuthors = [
   {
     name: 'John Doe',
@@ -108,28 +108,25 @@ const sampleAuthors = [
   }
 ];
 
-// Initialize Redis with sample data
+
 async function initializeRedis() {
   console.log('Starting Redis initialization...');
   try {
-    // Clear all existing data
+    
     await redis.flushall();
     console.log('Cleared existing Redis data');
     
-    // Store authors in Redis first
     console.log('Storing author data...');
     for (const author of sampleAuthors) {
       console.log(`Storing author: ${author.name}`);
       await redis.set(`author:${author.name}`, JSON.stringify(author));
-      // Create empty set for author's blogs
       await redis.del(`author_blogs:${author.name}`);
     }
     
-    // Store blogs in Redis
+  
     console.log('Storing blog data...');
     for (const blog of sampleBlogs) {
       console.log(`Storing blog: ${blog.title}`);
-      // Store blog as JSON string
       await redis.set(`blog:${blog.id}`, JSON.stringify(blog));
       
       // Add blog ID to category set
@@ -140,7 +137,6 @@ async function initializeRedis() {
       await redis.sadd(`author_blogs:${blog.author}`, blog.id);
     }
     
-    // Verify author data
     for (const author of sampleAuthors) {
       const storedAuthor = await redis.get(`author:${author.name}`);
       const authorBlogs = await redis.smembers(`author_blogs:${author.name}`);
@@ -161,10 +157,10 @@ async function initializeRedis() {
 // Initialize Redis when server starts
 initializeRedis().catch(error => {
   console.error('Failed to initialize Redis:', error);
-  process.exit(1); // Exit if initialization fails
+  process.exit(1);
 });
 
-// Get blogs by category
+
 app.get('/api/category/:category', async (req, res) => {
   console.log(`Fetching blogs for category: ${req.params.category}`);
   try {
@@ -206,23 +202,20 @@ app.get('/api/blog/:id', async (req, res) => {
   }
 });
 
-// Signup route
 app.post('/api/signup', async (req, res) => {
   console.log('Received signup request:', req.body.username);
   try {
     const { username, password } = req.body;
 
-    // Check if username is provided and at least 3 characters
+    
     if (!username || username.length < 3) {
       return res.status(400).json({ error: 'Username must be at least 3 characters long' });
     }
-
-    // Check if password is provided and at least 6 characters
+    
     if (!password || password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
-    // Check if username already exists
     const existingUser = await redis.get(`user:${username}`);
     if (existingUser) {
       return res.status(400).json({ error: 'Username already exists' });
@@ -266,7 +259,6 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    // Create session token (you might want to use JWT here)
     const sessionToken = Math.random().toString(36).substring(2);
     await redis.set(`session:${sessionToken}`, username, 'EX', 24 * 60 * 60); // Expires in 24 hours
 
