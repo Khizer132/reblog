@@ -6,7 +6,7 @@ on:
       - main  # or your default branch
 
 env:
-  AWS_REGION: us-east-1  # Change this to your preferred region
+  AWS_REGION: Europe (Stockholm) eu-north-1  # Change this to your preferred region
   S3_BUCKET: your-s3-bucket-name  # Change this to your S3 bucket name
   EB_APPLICATION_NAME: your-eb-application-name  # Change this to your Elastic Beanstalk application name
   EB_ENVIRONMENT_NAME: your-eb-environment-name  # Change this to your Elastic Beanstalk environment name
