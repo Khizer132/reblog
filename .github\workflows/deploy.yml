@@ -6,10 +6,10 @@ on:
       - main  # or your default branch
 
 env:
-  AWS_REGION: Europe (Stockholm) eu-north-1  # Change this to your preferred region
-  S3_BUCKET: your-s3-bucket-name  # Change this to your S3 bucket name
-  EB_APPLICATION_NAME: your-eb-application-name  # Change this to your Elastic Beanstalk application name
-  EB_ENVIRONMENT_NAME: your-eb-environment-name  # Change this to your Elastic Beanstalk environment name
+  AWS_REGION: eu-north-1                # Your AWS region
+  S3_BUCKET: blogify0bucket             # Your S3 bucket name
+  EB_APPLICATION_NAME: blogify-app      # Your Elastic Beanstalk application name
+  EB_ENVIRONMENT_NAME: Blogify-app-env  # Your Elastic Beanstalk environment name # Change this to your Elastic Beanstalk environment name
 
 jobs:
   deploy:
