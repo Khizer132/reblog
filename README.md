@@ -15,7 +15,7 @@ A modern blog application built with React, Node.js, and Redis, featuring a beau
 - 🔄 Real-time Author-Blog Relationship
 - 🎯 Optimized Performance with Redis Caching
 
-## Tech Stack:
+## Tech Stack
 
 - **Frontend:**
   - React.js
