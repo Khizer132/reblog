@@ -7,9 +7,9 @@ on:
 
 env:
   AWS_REGION: eu-north-1                # Your AWS region
-  S3_BUCKET: blogify0bucket             # Your S3 bucket name
-  EB_APPLICATION_NAME: blogify-app      # Your Elastic Beanstalk application name
-  EB_ENVIRONMENT_NAME: Blogify-app-env  # Your Elastic Beanstalk environment name # Change this to your Elastic Beanstalk environment name
+  S3_BUCKET: blogify1bucket             # Your S3 bucket name
+  EB_APPLICATION_NAME: reblgogify     # Your Elastic Beanstalk application name
+  EB_ENVIRONMENT_NAME: Reblgogify-env # Your Elastic Beanstalk environment name # Change this to your Elastic Beanstalk environment name
 
 jobs:
   deploy:
