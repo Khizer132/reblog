@@ -83,7 +83,7 @@ const Login = () => {
         <p style={signupTextStyle}>
           Don't have an account?{' '}
           <button onClick={goToSignup} style={signupBtnStyle}>
-            Sign up
+            Register
           </button>
         </p>
       </form>
