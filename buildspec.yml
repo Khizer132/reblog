@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo Installing dependencies...
+      - npm install
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - echo Installing dependencies...
+      - npm install
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Running build...
+      - npm run build
+      - echo Build completed on `date`
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Creating deployment package...
+      - zip -r deploy.zip . -x "*.git*" "node_modules/*"
+
+artifacts:
+  files:
+    - '**/*'
+    - '!node_modules/**/*'
+    - '!.git/**/*'
+  base-directory: '.'
+
+cache:
+  paths:
+    - 'node_modules/**/*' 
