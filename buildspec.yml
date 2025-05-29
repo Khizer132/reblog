@@ -19,15 +19,15 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Creating deployment package...
-      - zip -r deploy.zip . -x "*.git*" "node_modules/*"
+      - echo Preparing backend deployment package...
+      - cd src/backend
+      - npm install --production
+      - zip -r ../../deploy.zip . -x "*.git*"
+      - echo Deployment package created at deploy.zip
 
 artifacts:
   files:
-    - '**/*'
-    - '!node_modules/**/*'
-    - '!.git/**/*'
-  base-directory: '.'
+    - 'deploy.zip'
 
 cache:
   paths:
