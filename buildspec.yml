@@ -15,12 +15,14 @@ phases:
       - echo Build started on `date`
       - echo Running build...
       - npm run build
+      - echo Installing backend production dependencies...
+      - cd src/backend
+      - npm install --production
+      - cd ../..
       - echo Build completed on `date`
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Installing backend production dependencies...
-      - npm install --production --prefix ./src/backend
       - echo Creating deployment package...
       - cd src/backend
       - zip -r ../../deploy.zip . -x "*.git*"
