@@ -1,4 +1,4 @@
-## React Blog Application with Redis Integration
+# React Blog Application with Redis Integration
 
 A modern blog application built with React, Node.js, and Redis, featuring a beautiful glass-morphism UI design and comprehensive blog management capabilities. This application showcases modern web development practices with a focus on performance, user experience, and scalability.
 
