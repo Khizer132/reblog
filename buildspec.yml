@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       nodejs: 20
     commands:
-      - echo Installing dependencies...
+      - echo Installing root dependencies...
       - npm install
   pre_build:
     commands:
@@ -19,9 +19,10 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Preparing backend deployment package...
+      - echo Installing backend production dependencies...
+      - npm install --production --prefix ./src/backend
+      - echo Creating deployment package...
       - cd src/backend
-      - npm install --production
       - zip -r ../../deploy.zip . -x "*.git*"
       - echo Deployment package created at deploy.zip
 
