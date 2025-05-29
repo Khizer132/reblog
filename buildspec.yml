@@ -25,13 +25,16 @@ phases:
       - echo Build completed on `date`
       - echo Creating deployment package...
       - cd src/backend
-      - zip -r ../../deploy.zip . -x "*.git*"
+      - zip -r ../../deploy.zip . -x "*.git*" "node_modules/.cache/*"
+      - cd ../..
       - echo Deployment package created at deploy.zip
 
 artifacts:
   files:
     - 'deploy.zip'
+    - 'src/backend/node_modules/**/*'
 
 cache:
   paths:
-    - 'node_modules/**/*' 
+    - 'node_modules/**/*'
+    - 'src/backend/node_modules/**/*' 
