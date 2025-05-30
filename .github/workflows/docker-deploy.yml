@@ -59,7 +59,8 @@ jobs:
               "name": "frontend",
               "image": "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_FRONTEND }}:${{ github.sha }}",
               "essential": true,
-              "memory": 512,
+              "memory": 768,
+              "memoryReservation": 768,
               "portMappings": [
                 {
                   "hostPort": 80,
@@ -77,7 +78,8 @@ jobs:
               "name": "backend",
               "image": "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_BACKEND }}:${{ github.sha }}",
               "essential": true,
-              "memory": 512,
+              "memory": 768,
+              "memoryReservation": 768,
               "portMappings": [
                 {
                   "hostPort": 5000,
@@ -99,7 +101,8 @@ jobs:
               "name": "redis",
               "image": "redis:alpine",
               "essential": true,
-              "memory": 256,
+              "memory": 384,
+              "memoryReservation": 384,
               "portMappings": [
                 {
                   "hostPort": 6379,
