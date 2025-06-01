@@ -12,6 +12,8 @@ phases:
   pre_build:
     commands:
       - echo "Logging in to Amazon ECR..."
+      - echo "AWS Account ID: $AWS_ACCOUNT_ID"
+      - echo "AWS Region: $AWS_DEFAULT_REGION"
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - FRONTEND_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/reblog-frontend
       - BACKEND_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/reblog-backend
