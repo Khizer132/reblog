@@ -37,43 +37,29 @@ phases:
       - echo "Pushing backend Docker image..."
       - docker push $BACKEND_REPOSITORY_URI:latest
       - docker push $BACKEND_REPOSITORY_URI:$IMAGE_TAG
-
-      # Update task definition with new image URIs
       - echo "Updating task definition..."
-      - jq --arg frontend "$FRONTEND_REPOSITORY_URI:$IMAGE_TAG" \
-           --arg backend "$BACKEND_REPOSITORY_URI:$IMAGE_TAG" \
-           '.containerDefinitions[0].image = $frontend | .containerDefinitions[1].image = $backend' \
-           taskdef.json > taskdef_updated.json
-
-      # Register new task definition
+      - jq --arg frontend "$FRONTEND_REPOSITORY_URI:$IMAGE_TAG" --arg backend "$BACKEND_REPOSITORY_URI:$IMAGE_TAG" '.containerDefinitions[0].image = $frontend | .containerDefinitions[1].image = $backend' taskdef.json > taskdef_updated.json
       - echo "Registering new task definition..."
       - TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json file://taskdef_updated.json)
       - TASK_REVISION=$(echo $TASK_DEFINITION | jq -r '.taskDefinition.revision')
-
-      # Update ECS service
       - echo "Updating ECS service..."
       - aws ecs update-service --cluster reblog-cluster --service reblog-service --task-definition reblog-task:$TASK_REVISION --force-new-deployment
-
-      # Generate Dockerrun.aws.json for Elastic Beanstalk
       - echo "Generating Dockerrun.aws.json..."
-      - jq --arg frontend "$FRONTEND_REPOSITORY_URI:$IMAGE_TAG" \
-           --arg backend "$BACKEND_REPOSITORY_URI:$IMAGE_TAG" \
-           '.containerDefinitions[0].image = $frontend | .containerDefinitions[1].image = $backend' \
-           Dockerrun.aws.json > Dockerrun.aws.artifact.json
+      - jq --arg frontend "$FRONTEND_REPOSITORY_URI:$IMAGE_TAG" --arg backend "$BACKEND_REPOSITORY_URI:$IMAGE_TAG" '.containerDefinitions[0].image = $frontend | .containerDefinitions[1].image = $backend' Dockerrun.aws.json > Dockerrun.aws.artifact.json
 
 artifacts:
   files:
-    - 'Dockerrun.aws.artifact.json'
-    - 'taskdef_updated.json'
-    - 'docker-compose.yml'
-    - 'Dockerfile.frontend'
-    - 'Dockerfile.backend'
-    - 'package.json'
-    - 'package-lock.json'
-    - 'src/**/*'
-    - 'build/**/*'
+    - Dockerrun.aws.artifact.json
+    - taskdef_updated.json
+    - docker-compose.yml
+    - Dockerfile.frontend
+    - Dockerfile.backend
+    - package.json
+    - package-lock.json
+    - src/**/*
+    - build/**/*
   discard-paths: yes
 
 cache:
   paths:
-    - 'node_modules/**/*'
+    - node_modules/**/*
