@@ -1,0 +1,36 @@
+{
+    "cluster": "reblog-cluster",
+    "serviceName": "reblog-service",
+    "taskDefinition": "reblog-task",
+    "desiredCount": 2,
+    "launchType": "FARGATE",
+    "platformVersion": "LATEST",
+    "networkConfiguration": {
+        "awsvpcConfiguration": {
+            "subnets": [
+                "subnet-0a38d3a27b982a1d1",
+                "subnet-06acce723af43c516"
+            ],
+            "securityGroups": [
+                "sg-09922bb462696da0c"
+            ],
+            "assignPublicIp": "ENABLED"
+        }
+    },
+    "loadBalancers": [
+        {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:eu-north-1:320005330206:targetgroup/reblog-tg/83bf44a09697719e",
+            "containerName": "reblog-app",
+            "containerPort": 3000
+        }
+    ],
+    "healthCheckGracePeriodSeconds": 60,
+    "deploymentConfiguration": {
+        "maximumPercent": 200,
+        "minimumHealthyPercent": 100,
+        "deploymentCircuitBreaker": {
+            "enable": true,
+            "rollback": true
+        }
+    }
+} 

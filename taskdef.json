@@ -1,0 +1,82 @@
+{
+    "family": "reblog-task",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "name": "frontend",
+            "image": "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/reblog-frontend:latest",
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "cpu": 256,
+            "memory": 512,
+            "essential": true,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/reblog-task-frontend",
+                    "awslogs-region": "<YOUR_REGION>",
+                    "awslogs-stream-prefix": "frontend"
+                }
+            }
+        },
+        {
+            "name": "backend",
+            "image": "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/reblog-backend:latest",
+            "portMappings": [
+                {
+                    "containerPort": 5000,
+                    "protocol": "tcp"
+                }
+            ],
+            "cpu": 256,
+            "memory": 512,
+            "essential": true,
+            "environment": [
+                {
+                    "name": "REDIS_URL",
+                    "value": "redis:6379"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/reblog-task-backend",
+                    "awslogs-region": "<YOUR_REGION>",
+                    "awslogs-stream-prefix": "backend"
+                }
+            }
+        },
+        {
+            "name": "redis",
+            "image": "redis:latest",
+            "portMappings": [
+                {
+                    "containerPort": 6379,
+                    "protocol": "tcp"
+                }
+            ],
+            "cpu": 256,
+            "memory": 256,
+            "essential": true,
+            "command": ["redis-server", "--appendonly", "yes"],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/reblog-task-redis",
+                    "awslogs-region": "<YOUR_REGION>",
+                    "awslogs-stream-prefix": "redis"
+                }
+            }
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "2048",
+    "executionRoleArn": "arn:aws:iam::<YOUR_AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole"
+} 

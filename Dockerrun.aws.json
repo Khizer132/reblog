@@ -1,0 +1,78 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "authentication": {
+    "bucket": "<YOUR_S3_BUCKET_FOR_DOCKERCFG>",
+    "key": ".dockercfg"
+  },
+  "containerDefinitions": [
+    {
+      "name": "frontend",
+      "image": "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/reblog-frontend:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/eb/reblog-app/containers/reblog-frontend",
+          "awslogs-region": "<YOUR_REGION>",
+          "awslogs-stream-prefix": "frontend"
+        }
+      }
+    },
+    {
+      "name": "backend",
+      "image": "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/reblog-backend:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "hostPort": 5000,
+          "containerPort": 5000
+        }
+      ],
+      "environment": [
+        {
+          "name": "REDIS_URL",
+          "value": "redis:6379"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/eb/reblog-app/containers/reblog-backend",
+          "awslogs-region": "<YOUR_REGION>",
+          "awslogs-stream-prefix": "backend"
+        }
+      }
+    },
+    {
+      "name": "redis",
+      "image": "redis:latest",
+      "essential": true,
+      "memory": 256,
+      "portMappings": [
+        {
+          "hostPort": 6379,
+          "containerPort": 6379
+        }
+      ],
+      "command": ["redis-server", "--appendonly", "yes"],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/eb/reblog-app/containers/reblog-redis",
+          "awslogs-region": "<YOUR_REGION>",
+          "awslogs-stream-prefix": "redis"
+        }
+      }
+    }
+  ],
+  "volumes": [],
+  "logging": "/var/log/eb-docker/containers/eb-current-app"
+} 

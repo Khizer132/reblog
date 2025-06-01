@@ -3,38 +3,75 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 20
+      nodejs: 18
     commands:
-      - echo Installing root dependencies...
+      - echo "Installing dependencies..."
       - npm install
+      - apt-get update && apt-get install -y jq
+
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - FRONTEND_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/reblog-frontend
+      - BACKEND_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/reblog-backend
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${IMAGE_TAG:=latest}
+
   build:
     commands:
-      - echo Build started on `date`
-      - echo Running build...
-      - npm run build
-      - echo Installing backend production dependencies...
-      - cd src/backend
-      - npm install --production
-      - cd ../..
-      - echo Build completed on `date`
+      - echo "Building frontend Docker image..."
+      - docker build -t $FRONTEND_REPOSITORY_URI:latest -f Dockerfile.frontend .
+      - docker tag $FRONTEND_REPOSITORY_URI:latest $FRONTEND_REPOSITORY_URI:$IMAGE_TAG
+      - echo "Building backend Docker image..."
+      - docker build -t $BACKEND_REPOSITORY_URI:latest -f Dockerfile.backend .
+      - docker tag $BACKEND_REPOSITORY_URI:latest $BACKEND_REPOSITORY_URI:$IMAGE_TAG
+
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Creating deployment package...
+      - echo "Pushing frontend Docker image..."
+      - docker push $FRONTEND_REPOSITORY_URI:latest
+      - docker push $FRONTEND_REPOSITORY_URI:$IMAGE_TAG
+      - echo "Pushing backend Docker image..."
+      - docker push $BACKEND_REPOSITORY_URI:latest
+      - docker push $BACKEND_REPOSITORY_URI:$IMAGE_TAG
+
+      # Update task definition with new image URIs
+      - echo "Updating task definition..."
+      - jq --arg frontend "$FRONTEND_REPOSITORY_URI:$IMAGE_TAG" \
+           --arg backend "$BACKEND_REPOSITORY_URI:$IMAGE_TAG" \
+           '.containerDefinitions[0].image = $frontend | .containerDefinitions[1].image = $backend' \
+           taskdef.json > taskdef_updated.json
+
+      # Register new task definition
+      - echo "Registering new task definition..."
+      - TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json file://taskdef_updated.json)
+      - TASK_REVISION=$(echo $TASK_DEFINITION | jq -r '.taskDefinition.revision')
+
+      # Update ECS service
+      - echo "Updating ECS service..."
+      - aws ecs update-service --cluster reblog-cluster --service reblog-service --task-definition reblog-task:$TASK_REVISION --force-new-deployment
+
+      # Generate Dockerrun.aws.json for Elastic Beanstalk
+      - echo "Generating Dockerrun.aws.json..."
+      - jq --arg frontend "$FRONTEND_REPOSITORY_URI:$IMAGE_TAG" \
+           --arg backend "$BACKEND_REPOSITORY_URI:$IMAGE_TAG" \
+           '.containerDefinitions[0].image = $frontend | .containerDefinitions[1].image = $backend' \
+           Dockerrun.aws.json > Dockerrun.aws.artifact.json
 
 artifacts:
   files:
+    - 'Dockerrun.aws.artifact.json'
+    - 'taskdef_updated.json'
+    - 'docker-compose.yml'
+    - 'Dockerfile.frontend'
+    - 'Dockerfile.backend'
     - 'package.json'
     - 'package-lock.json'
-    - 'Procfile'
-    - 'src/backend/**/*'
+    - 'src/**/*'
     - 'build/**/*'
   discard-paths: yes
 
 cache:
   paths:
     - 'node_modules/**/*'
-    - 'src/backend/node_modules/**/*' 

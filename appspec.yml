@@ -1,0 +1,18 @@
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+          TaskDefinition: <TASK_DEFINITION> # CodeDeploy will automatically replace this
+          LoadBalancerInfo:
+              ContainerName: frontend # The container connected to the load balancer
+              ContainerPort: 80 # The port on the frontend container
+          # Optional: Add capability to scale instances
+          # DeploymentConfiguration:
+          #   MinimumHealthyTargets: 50
+          #   MaximumPercent: 200 
+
+# If you need CodeDeploy to manage other containers beyond the one targeted by the ALB,
+# you might include them in the task definition artifact and ensure your task definition
+# in taskdef.json includes all container definitions.
+# CodeDeploy will use the task definition provided as an artifact. 
