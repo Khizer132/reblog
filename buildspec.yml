@@ -11,6 +11,11 @@ phases:
 
   pre_build:
     commands:
+      - "echo 'Logging in to Docker Hub...'"
+      - |
+        export DOCKER_USERNAME=$(aws secretsmanager get-secret-value --secret-id docker-hub-credentials-SmOywe --query SecretString --output text | jq -r .username)
+        export DOCKER_PASSWORD=$(aws secretsmanager get-secret-value --secret-id docker-hub-credentials-SmOywe --query SecretString --output text | jq -r .password)
+        echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin docker.io
       - "echo 'Logging in to Amazon ECR...'"
       - |
         if [ -z "$AWS_ACCOUNT_ID" ]; then
