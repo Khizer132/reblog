@@ -1,13 +1,13 @@
 {
   "AWSEBDockerrunVersion": 2,
   "authentication": {
-    "bucket": "<YOUR_S3_BUCKET_FOR_DOCKERCFG>",
+    "bucket": "reblog-docker-cfg-320005330206",
     "key": ".dockercfg"
   },
   "containerDefinitions": [
     {
       "name": "frontend",
-      "image": "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/reblog-frontend:latest",
+      "image": "320005330206.dkr.ecr.eu-north-1.amazonaws.com/reblog-frontend:latest",
       "essential": true,
       "memory": 512,
       "portMappings": [
@@ -20,14 +20,14 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/eb/reblog-app/containers/reblog-frontend",
-          "awslogs-region": "<YOUR_REGION>",
+          "awslogs-region": "eu-north-1",
           "awslogs-stream-prefix": "frontend"
         }
       }
     },
     {
       "name": "backend",
-      "image": "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/reblog-backend:latest",
+      "image": "320005330206.dkr.ecr.eu-north-1.amazonaws.com/reblog-backend:latest",
       "essential": true,
       "memory": 512,
       "portMappings": [
@@ -46,7 +46,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/eb/reblog-app/containers/reblog-backend",
-          "awslogs-region": "<YOUR_REGION>",
+          "awslogs-region": "eu-north-1",
           "awslogs-stream-prefix": "backend"
         }
       }
@@ -67,7 +67,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/eb/reblog-app/containers/reblog-redis",
-          "awslogs-region": "<YOUR_REGION>",
+          "awslogs-region": "eu-north-1",
           "awslogs-stream-prefix": "redis"
         }
       }
