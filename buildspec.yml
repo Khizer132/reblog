@@ -57,7 +57,7 @@ phases:
       - "echo 'Registering new task definition...'"
       - "TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json file://taskdef_updated.json)"
       - "TASK_REVISION=$(echo $TASK_DEFINITION | jq -r '.taskDefinition.revision')"
-      - "echo 'Updating ECS service...')"
+      - "echo 'Updating ECS service...'"
       - "aws ecs update-service --cluster reblog-cluster --service reblog-task-service-hadnts5a --task-definition reblog-task:$TASK_REVISION --force-new-deployment"
       - "echo 'Generating Dockerrun.aws.json...'"
       - "jq --arg frontend \"$FRONTEND_REPOSITORY_URI:$IMAGE_TAG\" --arg backend \"$BACKEND_REPOSITORY_URI:$IMAGE_TAG\" '.containerDefinitions[0].image = $frontend | .containerDefinitions[1].image = $backend' Dockerrun.aws.json > Dockerrun.aws.artifact.json"
