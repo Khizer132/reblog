@@ -4,7 +4,7 @@
     "containerDefinitions": [
         {
             "name": "frontend",
-            "image": "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/reblog-frontend:latest",
+            "image": "320005330206.dkr.ecr.eu-north-1.amazonaws.com/reblog-frontend:latest",
             "portMappings": [
                 {
                     "containerPort": 80,
@@ -18,14 +18,14 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "/ecs/reblog-task-frontend",
-                    "awslogs-region": "<YOUR_REGION>",
+                    "awslogs-region": "eu-north-1",
                     "awslogs-stream-prefix": "frontend"
                 }
             }
         },
         {
             "name": "backend",
-            "image": "<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/reblog-backend:latest",
+            "image": "320005330206.dkr.ecr.eu-north-1.amazonaws.com/reblog-backend:latest",
             "portMappings": [
                 {
                     "containerPort": 5000,
@@ -45,7 +45,7 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "/ecs/reblog-task-backend",
-                    "awslogs-region": "<YOUR_REGION>",
+                    "awslogs-region": "eu-north-1",
                     "awslogs-stream-prefix": "backend"
                 }
             }
@@ -67,7 +67,7 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "/ecs/reblog-task-redis",
-                    "awslogs-region": "<YOUR_REGION>",
+                    "awslogs-region": "eu-north-1",
                     "awslogs-stream-prefix": "redis"
                 }
             }
@@ -78,5 +78,5 @@
     ],
     "cpu": "1024",
     "memory": "2048",
-    "executionRoleArn": "arn:aws:iam::<YOUR_AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole"
+    "executionRoleArn": "arn:aws:iam::320005330206:role/ecsTaskExecutionRole"
 } 
